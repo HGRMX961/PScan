@@ -11,16 +11,24 @@ def port_scan(target, ports):
 
     print(f"Scanning target: {target} ({target_ip})")
 
+    open_ports = []
+
     for port in ports:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(1)  # Adjust timeout as needed
         result = sock.connect_ex((target_ip, port))
 
         if result == 0:
-            print(f"Port {port} is open")
+            service = socket.getservbyport(port)
+            print(f"Port {port} ({service}): Open")
+            open_ports.append((port, service))
         else:
-            print(f"Port {port} is closed")
+            print(f"Port {port}: Closed")
         sock.close()
+
+    print("\nOpen ports:")
+    for port, service in open_ports:
+        print(f"Port {port} ({service})")
 
 def main():
     parser = argparse.ArgumentParser(description="Simple port scanner")
